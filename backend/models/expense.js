@@ -204,6 +204,39 @@ class Expense {
       );
     }
   }
+
+  static async getKilometrinaSumByMonth(email, year, month) {
+    try {
+      const snapshot = await db
+        .collection("Potni_stroski")
+        .where("oseba", "==", email) // Filtrira po emailu
+        .get();
+
+      const expenses = snapshot.docs
+        .map((doc) => doc.data());
+
+      const startOfMonth = new Date(year, month - 1, 1);
+      const endOfMonth = new Date(year, month, 0);
+
+      const totalKilometrina = expenses.reduce((sum, expense) => {
+        const datumOdhoda = new Date(expense.datum_odhoda);
+        if (datumOdhoda >= startOfMonth && datumOdhoda <= endOfMonth) {
+          return sum + (expense.kilometrina || 0);
+        }
+        return sum;
+      }, 0);
+  
+      return {
+        email,
+        month: `${year}-${month.toString().padStart(2, "0")}`,
+        totalKilometrina: totalKilometrina,
+      };
+    } catch (error) {
+      throw new Error(
+        `Error calculating total kilometrina for ${year}-${month} for user ${email}: ${error.message}`
+      );
+    }
+  }
 }
 
 module.exports = Expense;

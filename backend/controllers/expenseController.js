@@ -223,6 +223,23 @@ async function pridobiVsotoCenePoOsebi(req, res) {
   }
 }
 
+async function pridobiVsotoKilometrineZaMesec(req, res) {
+  const { email, year, month } = req.query;
+
+  if (!email || !year || !month) {
+    return res.status(400).json({ error: "Vsa polja morajo biti izpolnjena" });
+  }
+
+  try {
+    const totalKilometrina = await Expense.getKilometrinaSumByMonth(email, year, month);
+    res.status(200).json(totalKilometrina);
+  } catch (error) {
+    res.status(500).json({
+      details: `Error calculating total kilometrina for ${year}-${month} for user ${email}: ${error.message}`,
+    });
+  }
+}
+
 module.exports = {
   dodajStrosek,
   vsiStroski,
@@ -231,5 +248,6 @@ module.exports = {
   izbrisiStrosek,
   stroskiPoOsebi,
   vsotaStroskovPoOsebi,
-  pridobiVsotoCenePoOsebi
+  pridobiVsotoCenePoOsebi,
+  pridobiVsotoKilometrineZaMesec
 };

@@ -10,6 +10,7 @@ jest.mock("../models/expense", () => ({
     getByUserEmail: jest.fn(),
     getByMonth: jest.fn(),
     getCenaSumByUser: jest.fn(),
+    getKilometrinaSumByMonth: jest.fn(),
 }));
 
 describe("Expense Controller", () => {
@@ -142,5 +143,58 @@ describe("Expense Controller", () => {
         const response = await Expense.getByMonth(year, month, 12, 0);
 
         expect(response).toEqual(mockExpenses);
+    });
+
+    // naloga 7
+    it("should calculate the correct totalKilometrina for a month for a usesr", async () => {
+        const email = "nekaj@gmail.com";
+        const year = 2024;
+        const month = 10;
+        const mockValues = [1000, 94];
+        const mockTotalKilometrina = 1094;
+
+        Expense.getKilometrinaSumByMonth.mockResolvedValue({ email, month: "2024-10", totalKilometrina: mockTotalKilometrina });
+        const response = await Expense.getKilometrinaSumByMonth(email, year, month);
+
+        expect(response).toEqual({ email, month: `${year}-${month}`, totalKilometrina: mockValues[0]+mockValues[1] });
+    });
+
+    it("should get totalKilometrina as 0 if user has no expenses in specific month", async () => {
+        const email = "nekaj@gmail.com";
+        const year = 2024;
+        const month = 10;
+        const mockTotalKilometrina = 0;
+
+        Expense.getKilometrinaSumByMonth.mockResolvedValue({ email, month: "2024-10", totalKilometrina: 0 });
+        const response = await Expense.getKilometrinaSumByMonth(email);
+
+        expect(response).toEqual({ email, month: `${year}-${month}`, totalKilometrina: mockTotalKilometrina });
+    });
+
+    it("should return error if email is missing", async () => {
+        Expense.getKilometrinaSumByMonth.mockRejectedValue(new Error("Vsa polja morajo biti izpolnjena"));
+        await expect(
+            Expense.getKilometrinaSumByMonth("nekaj@gmail.com", 2024)
+        ).rejects.toThrow("Vsa polja morajo biti izpolnjena");
+    });
+
+    it("should return error if there is a database issue", async () => {
+        Expense.getKilometrinaSumByMonth.mockRejectedValue(new Error("Error calculating total kilometrina"));
+        await expect(
+            Expense.getKilometrinaSumByMonth("nekaj@gmail.com", 2024, 10)
+        ).rejects.toThrow("Error calculating total kilometrina");
+    });
+
+    it("should get expenses by emails", async () => {
+        const mockExpenses = [
+            { id: "nekaj@gmail.com_2025-01-25T00:00:00.000Z", naziv: "Testni strošek", datum_prihoda: "2024-10-27", datum_odhoda: "2024-10-28", kilometrina: 100, lokacija: "Ljubljana", opis: "Sestanek", oseba: "nekaj@gmail.com" }
+        ];
+        const emails = ["nekaj@gmail.com"];
+
+        Expense.getByEmails.mockResolvedValue({ stroski: mockExpenses, totalItems: 1 });
+        const response = await Expense.getByEmails(emails, 12, 1);
+
+        expect(response.stroski).toEqual(mockExpenses);
+        expect(response.totalItems).toBe(1);
     });
 });

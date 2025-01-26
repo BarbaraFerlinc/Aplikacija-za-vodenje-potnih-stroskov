@@ -4,3 +4,4 @@ key.json
 proba.js
 /coverage
 coverage/
+dockerToken.json
