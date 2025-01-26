@@ -64,6 +64,9 @@ jobs:
       with:
         node-version: 20
 
+    - name: Set environment variable
+      run: echo "EXPRESS_APP_FIREBASE_KEY=${{ secrets.EXPRESS_APP_FIREBASE_KEY }}" >> $GITHUB_ENV
+
     - name: Cache node_modules  # Caching odvisnosti
       uses: actions/cache@v3
       with:
