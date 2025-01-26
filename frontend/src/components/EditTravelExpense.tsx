@@ -22,7 +22,7 @@ const EditTravelExpense: React.FC = () => {
   useEffect(() => {
     const fetchExpense = async () => {
       try {
-        const response = await axios.get(`http://localhost:9000/strosek/${id}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/strosek/${id}`);
         setExpense(response.data);
       } catch (error) {
         setErrorMessage('Error fetching expense data.');
@@ -48,7 +48,7 @@ const EditTravelExpense: React.FC = () => {
     setSuccessMessage(null);
 
     try {
-      const response = await axios.put(`http://localhost:9000/strosek/${id}`, expense);
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/strosek/${id}`, expense);
       setSuccessMessage('Strošek je bil uspešno posodobljen!');
       console.log('Expense updated:', response.data);
     } catch (error) {

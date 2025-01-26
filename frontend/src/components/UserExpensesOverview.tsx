@@ -16,7 +16,7 @@ const UserExpenseOverview: React.FC = () => {
       setError(null);
 
       try {
-        const response = await axios.get(`http://localhost:9000/strosek/vsota`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/strosek/vsota`, {
           params: { email },
         });
         setTotalExpense(response.data.vsota_stroskov);

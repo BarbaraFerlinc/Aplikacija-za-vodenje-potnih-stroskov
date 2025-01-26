@@ -23,9 +23,6 @@ import { IExpense } from "../models/expenses";
 import {useNavigate} from "react-router-dom";
 
 import { Link } from 'react-router-dom';
-import { UserAuth } from "../context/AuthContext";
-
-
 
 const ExpenseListPage: React.FC = () => {
   const [expenses, setExpenses] = useState<IExpense[]>([]);
@@ -44,7 +41,7 @@ const ExpenseListPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:9000/strosek/vsi`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/strosek/vsi`, {
           params: {
             page: page + 1,
             limit: rowsPerPage,
@@ -66,7 +63,7 @@ const ExpenseListPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:9000/strosek/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/strosek/${id}`);
       window.location.reload();
     } catch (error) {
       console.error("Error deleting expense:", error);

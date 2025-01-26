@@ -96,7 +96,7 @@ const CreateExpenseComponent: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:9000/strosek/dodaj",
+        `${process.env.REACT_APP_API_URL}/strosek/dodaj`,
         {...expense, oseba: user?.email}
       );
       setSuccessMessage("Strošek je bil uspešno dodan!");

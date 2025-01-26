@@ -13,7 +13,7 @@ const DetailExpense: React.FC = () => {
     useEffect(() => {
         const fetchExpense = async () => {
             try {
-                const response = await axios.get(`http://localhost:9000/strosek/${id}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/strosek/${id}`);
                 setExpense(response.data);
             } catch (error) {
                 setErrorMessage('Error fetching expense data.');
