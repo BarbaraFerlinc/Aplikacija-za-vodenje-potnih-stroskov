@@ -1,4 +1,3 @@
-const Expense = require('../models/expense');
 const User = require('../models/user');
 
 jest.mock("../models/user", () => ({
