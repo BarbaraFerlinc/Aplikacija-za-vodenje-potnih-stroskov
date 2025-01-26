@@ -99,6 +99,7 @@ const ExpenseListPage: React.FC = () => {
 
   const handleEdit = (id: string) => {
     navigate(`/edit/${id}`); // Navigate to the expense details page
+  };
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMonthFilter(event.target.value);
@@ -195,6 +196,6 @@ const ExpenseListPage: React.FC = () => {
         )}
       </Container>
     );
-  };
-}
+};
+
 export default ExpenseListPage;
