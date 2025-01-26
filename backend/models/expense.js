@@ -182,6 +182,28 @@ class Expense {
 
     return expenses;
   }
+
+  static async getCenaSumByUser(email) {
+    try {
+      const snapshot = await db
+        .collection("Potni_stroski")
+        .where("oseba", "==", email)
+        .get();
+
+      const totalCena = snapshot.docs
+        .map((doc) => doc.data())
+        .reduce((sum, expense) => sum + (expense.cena || 0), 0);
+
+      return {
+        email,
+        totalCena: parseFloat(totalCena),
+      };
+    } catch (error) {
+      throw new Error(
+        `Error calculating total cena for user ${email}: ${error.message}`
+      );
+    }
+  }
 }
 
 module.exports = Expense;

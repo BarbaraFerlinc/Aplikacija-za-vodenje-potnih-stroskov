@@ -206,6 +206,23 @@ async function vsotaStroskovPoOsebi(req, res) {
   }
 }
 
+async function pridobiVsotoCenePoOsebi(req, res) {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({ error: "Parameter 'email' je obvezen." });
+  }
+
+  try {
+    const totalCena = await Expense.getCenaSumByUser(email);
+    res.status(200).json(totalCena);
+  } catch (error) {
+    res.status(500).json({
+      details: `Error calculating total cena for user ${email}: ${error.message}`,
+    });
+  }
+}
+
 module.exports = {
   dodajStrosek,
   vsiStroski,
@@ -214,4 +231,5 @@ module.exports = {
   izbrisiStrosek,
   stroskiPoOsebi,
   vsotaStroskovPoOsebi,
+  pridobiVsotoCenePoOsebi
 };

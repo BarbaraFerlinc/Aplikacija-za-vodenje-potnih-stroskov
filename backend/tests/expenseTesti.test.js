@@ -8,7 +8,8 @@ jest.mock("../models/expense", () => ({
     delete: jest.fn(),
     getByEmails: jest.fn(),
     getByUserEmail: jest.fn(),
-    getByMonth: jest.fn()
+    getByMonth: jest.fn(),
+    getCenaSumByUser: jest.fn(),
 }));
 
 describe("Expense Controller", () => {
@@ -94,13 +95,52 @@ describe("Expense Controller", () => {
         expect(response.message).toEqual("Strosek je bil izbrisan");
     });
 
-    // should return expenses by emails, should return expenses by user email,
-    // should return expenses by month, should calculate the sum of expenses in a date range for a user,
-    // should handle no expenses found for a user email, should throw an error when retrieving an expense by ID fails,
-    // should handle pagination correctly for expenses by emails
+    // naloga 6
+    it("should calculate the correct totalCena for a user", async () => {
+        const email = "nekaj@gmail.com";
+        const mockValues = [38.7, 430, 21.5, 51.6];
+        const mockTotalCena = 541.8;
 
-    // 4. naloga
-    // should calculate total kilometrina by user email, should return an empty array when no expenses are found for a given month,
-    // should throw an error when deleting a non-existing expense, should return an error when updating a non-existing expense,
-    // should correctly filter expenses by date range and user
+        Expense.getCenaSumByUser.mockResolvedValue({ email, totalCena: mockTotalCena });
+        const response = await Expense.getCenaSumByUser(email);
+
+        expect(response).toEqual({ email, totalCena: mockValues[0]+mockValues[1]+mockValues[2]+mockValues[3] });
+    });
+
+    it("should get totalCena as 0 if user has no expenses", async () => {
+        const email = "nekaj@gmail.com";
+        const mockTotalCena = 0;
+
+        Expense.getCenaSumByUser.mockResolvedValue({ email, totalCena: 0 });
+        const response = await Expense.getCenaSumByUser(email);
+
+        expect(response).toEqual({ email, totalCena: mockTotalCena });
+    });
+
+    it("should return error if email is missing", async () => {
+        Expense.getCenaSumByUser.mockRejectedValue(new Error("Parameter 'email' je obvezen."));
+        await expect(
+            Expense.getCenaSumByUser()
+        ).rejects.toThrow("Parameter 'email' je obvezen.");
+    });
+
+    it("should return error if there is a database issue", async () => {
+        Expense.getCenaSumByUser.mockRejectedValue(new Error("Error calculating total cena for user"));
+        await expect(
+            Expense.getCenaSumByUser("nekaj@gmail.com")
+        ).rejects.toThrow("Error calculating total cena for user");
+    });
+    
+    it("should get expenses by month", async () => {
+        const mockExpenses = [
+            { naziv: "Testni strošek", datum_prihoda: "2024-10-27", datum_odhoda: "2024-10-28", kilometrina: 100, lokacija: "Ljubljana", opis: "Sestanek", oseba: "nekaj@gmail.com" }
+        ];
+        const year = 2024;
+        const month = 11;
+
+        Expense.getByMonth.mockResolvedValue(mockExpenses);
+        const response = await Expense.getByMonth(year, month, 12, 0);
+
+        expect(response).toEqual(mockExpenses);
+    });
 });
