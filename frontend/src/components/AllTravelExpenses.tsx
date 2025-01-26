@@ -13,7 +13,6 @@ import {
   TableBody,
   Button,
   TablePagination,
-  IconButton,
   Box,
   TextField,
 } from '@mui/material';
@@ -39,9 +38,6 @@ const ExpenseListPage: React.FC = () => {
   const navigate= useNavigate();
 
   const [monthFilter, setMonthFilter] = useState<string>("");
-
-  const {user} = UserAuth();
-
 
   useEffect(() => {
     const fetchExpenses = async () => {
